@@ -1,0 +1,7 @@
+{
+  "name":"apidoc-plugin-schema ",
+  "version":"0.0.1",
+  "dependencies": {
+    "trim": "0.0.1"
+  }
+}
