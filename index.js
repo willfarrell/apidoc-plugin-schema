@@ -8,9 +8,9 @@ var schemas = {
 
 module.exports = function(element, filename) {
 	var values = elementParser.parse(element.content, element.source);
-	var schema = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
 	if (schemas[values.schema]) {
-		return schemas[values.schema](schema, values.args);
+	var data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
+		return schemas[values.schema](data, values.element);
 	}
 	return '';
 };

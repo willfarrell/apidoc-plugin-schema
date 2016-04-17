@@ -161,13 +161,12 @@ function traverse(schema, p) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
-function build (schema, args) {
-	schema = JSON.parse(schema);
-	var  type = args[0];
+function build (data, element) {
+	data = JSON.parse(data);
 	
 	// run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
 	var str, done = false;
-	$RefParser.dereference(schema, function(err, schema) {
+	$RefParser.dereference(data, function(err, schema) {
 		if (err) {
 			console.error(err);
 			done = true;
@@ -178,7 +177,7 @@ function build (schema, args) {
 		str = '';
 		for(var l in lines) {
 			if (!lines.hasOwnProperty(l)) { continue; }
-			str += '@'+type+' '+lines[l]+"\n";
+			str += '@'+element+' '+lines[l]+"\n";
 		}
 		done = true;
 	});

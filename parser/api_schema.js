@@ -16,7 +16,7 @@ function parse(content) {
 	return {
 		schema : matches[1],
 		path : matches[2],
-		args : matches[3].split(',') || ['apiParam']
+		element : matches[3] || 'apiParam'
 	};
 }
 
