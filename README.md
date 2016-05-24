@@ -8,7 +8,7 @@ Generates and inject [apidoc](http://apidoc.com) elements from api schemas.
 `npm install apidoc-plugin-schema --save-dev`
 
 ## Supported Schemas
-### [jsonschema](http://www.jsonschema.org)
+### [jsonschema](http://json-schema.org)
 - `description`
 - `type`
  - `array`: `items`
