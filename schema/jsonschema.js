@@ -168,7 +168,7 @@ function traverse(schema, p) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
-function build (data, element, elementParser) {
+function build (data, element) {
 	data = JSON.parse(data);
 	
 	// run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
