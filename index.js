@@ -6,11 +6,28 @@ var schemas = {
 	'jsonschema': require('./schema/jsonschema')
 };
 
-module.exports = function(element, filename) {
-	var values = elementParser.parse(element.content, element.source);
-	if (schemas[values.schema]) {
-	var data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
-		return schemas[values.schema](data, values.element);
-	}
-	return '';
+var app = {};
+
+module.exports = {
+
+    init: function(_app) {
+        app = _app;
+        app.addHook('parser-find-elements', parserSchemaElements);
+    }
+
 };
+
+function parserSchemaElements(elements, element, block, filename) {
+    if ( element.name === 'apischema' ) {
+		//app.log.verbose('element',element);
+        elements.pop();
+
+        var values = elementParser.parse(element.content, element.source);
+        //app.log.verbose('element.values',values);
+		if (schemas[values.schema]) {
+			var data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
+			elements.concat(schemas[values.schema](data, values.element, app.parser.parsers[values.element.toLowerCase()]));
+		}
+    }
+    return elements;
+}

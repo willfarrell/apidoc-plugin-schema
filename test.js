@@ -1,4 +1,9 @@
+var filename = __filename;
 
-var parse = require('./lib/schemas/jsonschema');
-var schema = require('./sample/schema');
-console.log(parse('', schema));
+var element = {
+	source:'@apiSchema',
+	content:'{jsonschema=./sample/jsonschema.json} apiParam'
+};
+
+var plugin = require('./');
+console.log(plugin(element, filename));

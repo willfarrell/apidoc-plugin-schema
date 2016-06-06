@@ -5,9 +5,16 @@ function exists(keys, key) {
 }
 
 function makeType(param) {
+	//console.log(param);
 	var str = param.type || '';
 	if (str === 'array') {
 		str = param.items.type+'[]';
+	}
+	// If no type, try using format
+	if (str === '' && param.format) {
+		str = param.format;
+	} else if (str === '') {
+	    str = 'Unknown';
 	}
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -161,11 +168,11 @@ function traverse(schema, p) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
-function build (data, element) {
+function build (data, element, elementParser) {
 	data = JSON.parse(data);
 	
 	// run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
-	var str, done = false;
+	var elements = [], done = false;
 	$RefParser.dereference(data, function(err, schema) {
 		if (err) {
 			console.error(err);
@@ -174,16 +181,19 @@ function build (data, element) {
 		}
 		//console.log('start',schema); 
 		var lines = traverse(schema);
-		str = '';
 		for(var l in lines) {
 			if (!lines.hasOwnProperty(l)) { continue; }
-			str += '@'+element+' '+lines[l]+"\n";
+			elements.push({ source: '@'+element+' '+lines[l]+'\n',
+				name: element.toLowerCase(),
+				sourceName: element,
+				content: lines[l]+'\n'
+			});
 		}
 		done = true;
 	});
 	require('deasync').loopWhile(function(){return !done;});
-	//console.log(str);
-	return str;
+	//console.log('generated', elements);
+	return elements;
 }
 
 module.exports = build;

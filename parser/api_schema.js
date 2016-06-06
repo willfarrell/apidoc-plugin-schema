@@ -25,7 +25,7 @@ function parse(content) {
  */
 module.exports = {
 	parse        : parse,
-	path         : 'local.schema',
+	path         : 'local',
 	method       : 'push',
 	preventGlobal: true
 };
