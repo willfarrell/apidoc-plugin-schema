@@ -23,10 +23,15 @@ function parserSchemaElements(elements, element, block, filename) {
         elements.pop();
 
         var values = elementParser.parse(element.content, element.source);
-        //app.log.verbose('element.values',values);
+        app.log.debug('apischema.path',values.path);
 		if (schemas[values.schema]) {
 			var data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
-			elements = elements.concat(schemas[values.schema](data, values.element));
+			var new_elements = schemas[values.schema](data, values.element, app.parser.parsers[values.element.toLowerCase()]);
+
+			// do not use concat
+			for(var i = 0,l=new_elements.length; i<l;i++) {
+				elements.push(new_elements[i]);
+			}
 		}
     }
     return elements;
