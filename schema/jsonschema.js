@@ -111,6 +111,8 @@ function traverse(schema, p) {
 	//schema = mergeAllOf(schema);
 	if (schema.type === 'object'){
 		properties = schema.properties;
+	} else if (schema.type === 'array' && !schema.items) { // catch errors
+	    throw SyntaxError('ERROR: schema array missing items');
 	} else if (schema.type === 'array' && schema.items.type === 'object') {
 		//schema.items = mergeAllOf(schema.items);
 		properties = schema.items.properties;

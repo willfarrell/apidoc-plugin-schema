@@ -26,7 +26,7 @@ function parserSchemaElements(elements, element, block, filename) {
         //app.log.verbose('element.values',values);
 		if (schemas[values.schema]) {
 			var data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
-			elements.concat(schemas[values.schema](data, values.element));
+			elements = elements.concat(schemas[values.schema](data, values.element));
 		}
     }
     return elements;
