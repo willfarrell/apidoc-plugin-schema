@@ -154,11 +154,11 @@ function traverse(schema, p) {
 		params[key] = group+'{'+type+size+allowedValues+'} '+field+' '+description;
 		
 		var subs = {};
-		var subgroup = p ? p+'.' : '';
+		//var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
 		if (param.type === 'array' && param.items.type === 'object') {
-			subs = traverse(param.items, subgroup+key+'[]');
+			subs = traverse(param.items, key+'[]'); // subgroup+
 		} else if (param.type === 'object') {
-			subs = traverse(param, subgroup+key);
+			subs = traverse(param, key); // subgroup+
 		}
 		for(var subKey in subs) {
 			if (!subs.hasOwnProperty(subKey)) { continue; }
