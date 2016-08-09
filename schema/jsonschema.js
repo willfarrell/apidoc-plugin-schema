@@ -34,7 +34,7 @@ function makeType(param) {
 	    if (str === 'array') {
     		str = param.items.type+'[]';
     	}
-    	return str;
+    	return formatType(str);
 	}
 
 	return 'Unknown';
