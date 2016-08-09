@@ -4,19 +4,40 @@ function exists(keys, key) {
 	return keys.indexOf(key) !== -1;
 }
 
+function formatType(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// TODO change _OR_ to |, requires core fix to allow `Empty parser result.`
 function makeType(param) {
 	//console.log(param);
-	var str = param.type || '';
-	if (str === 'array') {
-		str = param.items.type+'[]';
+	var strarr = [];
+	if (param.format) {
+	    strarr.push(formatType(param.format));
+	    if ( Array.isArray(param.type) && param.type.indexOf('null') !== -1 ) {
+            strarr.push('Null');
+	    }
+	    return strarr.join('_OR_');
 	}
-	// If no type, try using format
-	if (str === '' && param.format) {
-		str = param.format;
-	} else if (str === '') {
-	    str = 'Unknown';
+	var str = '';
+	if (Array.isArray(param.type)) {
+        param.type.map(function(type){
+            str = param.type;
+            if (str === 'array') {
+                str = param.items.type+'[]';
+            }
+            strarr.push(formatType(str));
+        });
+        return strarr.join('_OR_');
+	} else {
+	    str = param.type
+	    if (str === 'array') {
+    		str = param.items.type+'[]';
+    	}
+    	return str;
 	}
-	return str.charAt(0).toUpperCase() + str.slice(1);
+
+	return 'Unknown';
 }
 
 function makeSize(param) {
