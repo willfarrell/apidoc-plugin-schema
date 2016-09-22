@@ -9,6 +9,7 @@ function formatType(str) {
 }
 
 // TODO change _OR_ to |, requires core fix to allow `Empty parser result.`
+// https://github.com/apidoc/apidoc-core/blob/master/lib/parsers/api_param.js
 function makeType(param) {
 	//console.log(param);
 	var strarr = [];
@@ -22,14 +23,14 @@ function makeType(param) {
 	var str = '';
 	if (Array.isArray(param.type)) {
         param.type.map(function(type){
-            str = param.type;
+            str = type;
             if (str === 'array') {
                 str = param.items.type+'[]';
             }
             strarr.push(formatType(str));
         });
         return strarr.join('_OR_');
-	} else {
+	} else if (param.type) {
 	    str = param.type
 	    if (str === 'array') {
     		str = param.items.type+'[]';
