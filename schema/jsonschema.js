@@ -11,7 +11,7 @@ function formatType(str) {
 // TODO change _OR_ to |, requires core fix to allow `Empty parser result.`
 // https://github.com/apidoc/apidoc-core/blob/master/lib/parsers/api_param.js
 function makeType(param) {
-	//console.log(param);
+	//console.log('makeType',param);
 	var strarr = [];
 	if (param.format) {
 	    strarr.push(formatType(param.format));
@@ -25,7 +25,7 @@ function makeType(param) {
         param.type.map(function(type){
             str = type;
             if (str === 'array') {
-                str = param.items.type+'[]';
+                str = makeType(param.items)+'[]';
             }
             strarr.push(formatType(str));
         });
@@ -33,7 +33,7 @@ function makeType(param) {
 	} else if (param.type) {
 	    str = param.type
 	    if (str === 'array') {
-    		str = param.items.type+'[]';
+    		str = makeType(param.items)+'[]';
     	}
     	return formatType(str);
 	}
@@ -89,6 +89,15 @@ function makeSize(param) {
 function makeAllowedValues(param) {
 	if (param.type === 'array') { param = param.items; }
 	
+        // convert null to string
+	if ( Array.isArray(param.enum) ) {
+            var index = param.enum.indexOf(null);
+
+            if (index !== -1) {
+                param.enum[index] = 'null';
+            }
+        }
+
 	return (Array.isArray(param.enum)) ? '='+param.enum.join(',') : '';
 }
 
