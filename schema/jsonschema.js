@@ -89,14 +89,18 @@ function makeSize(param) {
 function makeAllowedValues(param) {
 	if (param.type === 'array') { param = param.items; }
 	
-        // convert null to string
+        // convert null to string, add quotes to strings
 	if ( Array.isArray(param.enum) ) {
-            var index = param.enum.indexOf(null);
 
-            if (index !== -1) {
-                param.enum[index] = 'null';
+        param.enum = param.enum.map((item) => {
+            if (typeof item === 'string') {
+                item = '"'+item+'"';    // ensures values with spaces render properly
+            } else if (item === null) {
+                item = 'null';
             }
-        }
+            return item;
+        });
+    }
 
 	return (Array.isArray(param.enum)) ? '='+param.enum.join(',') : '';
 }
