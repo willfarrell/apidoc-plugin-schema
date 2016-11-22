@@ -12,6 +12,7 @@ function formatType(str) {
 // https://github.com/apidoc/apidoc-core/blob/master/lib/parsers/api_param.js
 function makeType(param) {
 	//console.log('makeType',param);
+	param = Array.isArray(param)? param[0]: param;
 	var strarr = [];
 	if (param.format) {
 	    strarr.push(formatType(param.format));
@@ -32,12 +33,12 @@ function makeType(param) {
         return strarr.join('_OR_');
 	} else if (param.type) {
 	    str = param.type
-	    if (str === 'array') {
+	    if (str === 'array') {			
     		str = makeType(param.items)+'[]';
     	}
     	return formatType(str);
 	}
-
+	
 	return 'Unknown';
 }
 
@@ -107,8 +108,10 @@ function makeAllowedValues(param) {
 
 function isRequired(schema, key) {
 	if (schema.type === 'array') { schema = schema.items; }
+		
 	// TODO figure out way to display when anyOf, oneOf
-	return exists(Object.keys(schema),'required') && (schema.required.indexOf(key) !== -1);
+	return (exists(Object.keys(schema),'required') && (schema.required.indexOf(key) !== -1)) || 
+					(exists(Object.keys(schema.properties), key) && schema.properties[key].required);
 }
 
 // NOTE this is not proper jsonschema, likely in v5 w/ merge
@@ -130,7 +133,7 @@ function isRequired(schema, key) {
 }*/
 
 
-function traverse(schema, p) {
+function traverse(schema, p, group) {
 	var params = {};
 	
 	// Case: apiSuccess returns an array
@@ -140,14 +143,14 @@ function traverse(schema, p) {
 	}*/
 	
 	p = p || '';
-	var group = p ? '('+p+') ' : '';
+
 	
 	var properties = {};
 	//schema = mergeAllOf(schema);
 	if (schema.type === 'object'){
 		properties = schema.properties;
 	} else if (schema.type === 'array' && !schema.items) { // catch errors
-	    throw SyntaxError('ERROR: schema array missing items');
+	  throw SyntaxError('ERROR: schema array missing items');
 	} else if (schema.type === 'array' && schema.items.type === 'object') {
 		//schema.items = mergeAllOf(schema.items);
 		properties = schema.items.properties;
@@ -171,7 +174,8 @@ function traverse(schema, p) {
 		}
 		
 		// make field
-		var field = key;
+		var parent = p ? p + '.':'';
+		var field = parent + key;
 
 		if (exists(Object.keys(param),'default')) {
 			if (typeof param.default === 'object') {
@@ -185,15 +189,16 @@ function traverse(schema, p) {
 			field = '['+field+']';
 		}
 		
+		var g = group ? '('+group+') ' : '';
 		// make group
-		params[key] = group+'{'+type+size+allowedValues+'} '+field+' '+description;
-		
+		params[key] = g+'{'+type+size+allowedValues+'} '+field+' '+description;
+		//console.log(parent+key, params[parent + key])
 		var subs = {};
 		//var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
 		if (param.type === 'array' && param.items.type === 'object') {
-			subs = traverse(param.items, key+'[]'); // subgroup+
+			subs = traverse(param.items, key+'[]', group); // subgroup+
 		} else if (param.type === 'object') {
-			subs = traverse(param, key); // subgroup+
+			subs = traverse(param, key, group); // subgroup+
 		}
 		for(var subKey in subs) {
 			if (!subs.hasOwnProperty(subKey)) { continue; }
@@ -205,9 +210,9 @@ function traverse(schema, p) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
-function build (data, element) {
+function build (data, element, group) {
 	data = JSON.parse(data);
-	
+
 	// run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
 	var elements = [], done = false;
 	$RefParser.dereference(data, function(err, schema) {
@@ -216,15 +221,17 @@ function build (data, element) {
 			done = true;
 			return;
 		}
-		//console.log('start',schema); 
-		var lines = traverse(schema);
+		var lines = traverse(schema, null, group);
 		for(var l in lines) {
 			if (!lines.hasOwnProperty(l)) { continue; }
-			elements.push({ source: '@'+element+' '+lines[l]+'\n',
+			
+			var res = { 
+				source: '@'+element+' '+lines[l]+'\n',
 				name: element.toLowerCase(),
 				sourceName: element,
 				content: lines[l]+'\n'
-			});
+			};
+			elements.push(res);
 		}
 		done = true;
 	});
