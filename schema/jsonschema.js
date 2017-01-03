@@ -189,6 +189,7 @@ function traverse(schema, p, group) {
 			field = '['+field+']';
 		}
 		
+		if (p) key = p + '.' + key;
 		var g = group ? '('+group+') ' : '';
 		// make group
 		params[key] = g+'{'+type+size+allowedValues+'} '+field+' '+description;
@@ -196,7 +197,7 @@ function traverse(schema, p, group) {
 		var subs = {};
 		//var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
 		if (param.type === 'array' && param.items.type === 'object') {
-			subs = traverse(param.items, key+'[]', group); // subgroup+
+			subs = traverse(param.items, key, group); // subgroup+
 		} else if (param.type === 'object') {
 			subs = traverse(param, key, group); // subgroup+
 		}
