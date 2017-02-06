@@ -211,6 +211,7 @@ function traverse(schema, p, group) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
+var jsf = require('json-schema-faker');
 function build (relativePath, data, element, group) {
 	data = JSON.parse(data);
 
@@ -219,21 +220,35 @@ function build (relativePath, data, element, group) {
 	$RefParser.dereference(relativePath, data, {}, function(err, schema) {
 		if (err) {
 			console.error(err);
-			done = true;
-			return;
 		}
-		var lines = traverse(schema, null, group);
-		for(var l in lines) {
-			if (!lines.hasOwnProperty(l)) { continue; }
+    else if(element.endsWith('Example'))
+    {
+        var faker=jsf(schema); 
+		    var g = group ? ''+group+' ' : ' Example: ';
+        var con = ' {json} '+g+'\n'+JSON.stringify(faker,null,4);
+        var res = {
+          source: '@'+element+con,   
+				  name: element.toLowerCase(),
+				  sourceName: element,
+          content: con+'\n'
+        };
+        elements.push(res);
+    }
+    else
+    {
+		  var lines = traverse(schema, null, group);   
+		  for(var l in lines) {
+			   if (!lines.hasOwnProperty(l)) { continue; }
 			
-			var res = { 
-				source: '@'+element+' '+lines[l]+'\n',
-				name: element.toLowerCase(),
-				sourceName: element,
-				content: lines[l]+'\n'
-			};
-			elements.push(res);
-		}
+			   var res = { 
+				  source: '@'+element+' '+lines[l]+'\n',
+				  name: element.toLowerCase(),
+				  sourceName: element,
+				  content: lines[l]+'\n'
+			   }; 
+			   elements.push(res);
+		  }
+    }
 		done = true;
 	});
 	require('deasync').loopWhile(function(){return !done;});
