@@ -211,12 +211,12 @@ function traverse(schema, p, group) {
 }
 
 var $RefParser = require('json-schema-ref-parser');
-function build (data, element, group) {
+function build (relativePath, data, element, group) {
 	data = JSON.parse(data);
 
 	// run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
 	var elements = [], done = false;
-	$RefParser.dereference(data, function(err, schema) {
+	$RefParser.dereference(relativePath, data, {}, function(err, schema) {
 		if (err) {
 			console.error(err);
 			done = true;
