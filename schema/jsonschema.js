@@ -95,20 +95,20 @@ function makeAllowedValues(param) {
 
 	let values = [];
 	param.enum = param.enum.map((item) => {
-			if (typeof item === 'string') {
-		values.push('"'+item+'"'); // ensures values with spaces render properly
-	} else if (item === null) {
-		// required to be at beginning
-		values.unshift('null');
-	} else if (item === true) {
-		// required to be at beginning
-		values.unshift('true');
-	} else if (item === false) {
-		// required to be at beginning
-		values.unshift('false');
-	}
-	return item;
-});
+		if (typeof item === 'string') {
+			values.push('"'+item+'"'); // ensures values with spaces render properly
+		} else if (item === null) {
+			// required to be at beginning
+			values.unshift('null');
+		} else if (item === true) {
+			// required to be at beginning
+			values.unshift('true');
+		} else if (item === false) {
+			// required to be at beginning
+			values.unshift('false');
+		}
+		return item;
+	});
 
 	return '='+values.join(',');
 }
