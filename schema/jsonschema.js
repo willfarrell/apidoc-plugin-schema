@@ -89,25 +89,28 @@ function makeSize(param) {
 
 function makeAllowedValues(param) {
 	if (param.type === 'array') { param = param.items; }
-	
-        // convert null to string, add quotes to strings
-	if ( Array.isArray(param.enum) ) {
 
-        param.enum = param.enum.map((item) => {
-            if (typeof item === 'string') {
-                item = '"'+item+'"';    // ensures values with spaces render properly
-            } else if (item === null) {
-                item = 'null';
-            } else if (item === true) {
-				item = 'true';
-			} else if (item === false) {
-				item = 'false';
-			}
-            return item;
-        });
-    }
+	// convert null,true,false to string, add quotes to strings
+	if ( !Array.isArray(param.enum) ) { return ''; }
 
-	return (Array.isArray(param.enum)) ? '='+param.enum.join(',') : '';
+	let values = [];
+	param.enum = param.enum.map((item) => {
+			if (typeof item === 'string') {
+		values.push('"'+item+'"'); // ensures values with spaces render properly
+	} else if (item === null) {
+		// required to be at beginning
+		values.unshift('null');
+	} else if (item === true) {
+		// required to be at beginning
+		values.unshift('true');
+	} else if (item === false) {
+		// required to be at beginning
+		values.unshift('false');
+	}
+	return item;
+});
+
+	return '='+values.join(',');
 }
 
 function isRequired(schema, key) {
