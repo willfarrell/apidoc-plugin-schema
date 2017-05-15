@@ -98,7 +98,11 @@ function makeAllowedValues(param) {
                 item = '"'+item+'"';    // ensures values with spaces render properly
             } else if (item === null) {
                 item = 'null';
-            }
+            } else if (item === true) {
+				item = 'true';
+			} else if (item === false) {
+				item = 'false';
+			}
             return item;
         });
     }
