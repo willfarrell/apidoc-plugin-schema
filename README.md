@@ -28,6 +28,9 @@ Generates and inject [apidoc](http://apidoc.com) elements from api schemas.
  */
 ```
 
+## Developer Note
+This plugin uses `parser-find-elements` @ priority `201`.
+
 ## TODO
 - Add in unit test for jsonschema
 - Add in travis-ci
