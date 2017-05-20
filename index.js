@@ -22,8 +22,9 @@ function parserSchemaElements(elements, element, block, filename) {
 	const values = elementParser.parse(element.content, element.source);
 	app.log.debug('apischema.path',values.path);
 	if (schemas[values.schema]) {
-		const data = fs.readFileSync( path.join(path.dirname(filename), values.path), 'utf8').toString();
-		const new_elements = schemas[values.schema](data, values.element, values.group);
+		const relative_path = path.join(path.dirname(filename), values.path);
+		const data = fs.readFileSync(relative_path, 'utf8').toString();
+		const new_elements = schemas[values.schema](relative_path, data, values.element, values.group);
 
 		// do not use concat
 		for(let i = 0,l=new_elements.length; i<l;i++) {
