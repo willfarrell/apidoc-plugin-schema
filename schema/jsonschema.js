@@ -8,7 +8,7 @@ function formatType(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// TODO change _OR_ to |, requires core fix to allow `Empty parser result.`
+// TODO change / to |, requires core fix to allow `Empty parser result.`
 // https://github.com/apidoc/apidoc-core/blob/master/lib/parsers/api_param.js
 function makeType(param) {
 	//console.log('makeType',param);
@@ -19,7 +19,7 @@ function makeType(param) {
 	    if ( Array.isArray(param.type) && param.type.indexOf('null') !== -1 ) {
             strarr.push('Null');
 	    }
-	    return strarr.join('_OR_');
+	    return strarr.join('/');
 	}
 	var str = '';
 	if (Array.isArray(param.type)) {
@@ -30,10 +30,10 @@ function makeType(param) {
             }
             strarr.push(formatType(str));
         });
-        return strarr.join('_OR_');
+        return strarr.join('/');
 	} else if (param.type) {
 	    str = param.type
-	    if (str === 'array') {			
+	    if (str === 'array') {
     		str = makeType(param.items)+'[]';
     	}
     	return formatType(str);
