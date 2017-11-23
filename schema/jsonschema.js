@@ -97,7 +97,9 @@ function makeAllowedValues(param) {
 	param.enum = param.enum.map((item) => {
 		if (typeof item === 'string') {
 			values.push('"'+item+'"'); // ensures values with spaces render properly
-		} else if (item === null) {
+		} else if (typeof item === 'number') {
+                        values.push(item.toString());
+                } else if (item === null) {
 			// required to be at beginning
 			values.unshift('null');
 		} else if (item === true) {
