@@ -27,7 +27,8 @@
 	],
   "dependencies": {
     "trim": "0.0.1",
-    "json-schema-ref-parser":"*",
+    "json-schema-ref-parser":"*",    
+    "json-schema-faker": "*",
     "deasync":"*"
   }
 }
