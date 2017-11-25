@@ -156,11 +156,11 @@ function traverse(schema, p, group) {
 	
 	var properties = {};
 	//schema = mergeAllOf(schema);
-	if (schema.type === 'object'){
+	if (isType(schema.type, 'object')){
 		properties = schema.properties;
-	} else if (schema.type === 'array' && !schema.items) { // catch errors
+	} else if (isType(schema.type, 'array') && !schema.items) { // catch errors
 	  throw SyntaxError('ERROR: schema array missing items');
-	} else if (schema.type === 'array' && schema.items.type === 'object') {
+	} else if (isType(schema.type, 'array') && schema.items.type === 'object') {
 		//schema.items = mergeAllOf(schema.items);
 		properties = schema.items.properties;
 	}
@@ -205,9 +205,9 @@ function traverse(schema, p, group) {
 		//console.log(parent+key, params[parent + key])
 		var subs = {};
 		//var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
-		if (param.type === 'array' && param.items.type === 'object') {
+		if (isType(param.type, 'array') && param.items.type === 'object') {
 			subs = traverse(param.items, key, group); // subgroup+
-		} else if (param.type === 'object') {
+		} else if (isType(param.type, 'object')) {
 			subs = traverse(param, key, group); // subgroup+
 		}
 		for(var subKey in subs) {
@@ -217,6 +217,14 @@ function traverse(schema, p, group) {
 	}
 
 	return params;
+}
+
+function isType(types, type) {
+	if (Array.isArray(types)) {
+		return types.indexOf(type) >= 0;
+	} else {
+		return types === type;
+	};
 }
 
 var $RefParser = require('json-schema-ref-parser');
@@ -234,8 +242,8 @@ function build (relativePath, data, element, group) {
 		var lines = traverse(schema, null, group);
 		for(var l in lines) {
 			if (!lines.hasOwnProperty(l)) { continue; }
-			
-			var res = { 
+
+			var res = {
 				source: '@'+element+' '+lines[l]+'\n',
 				name: element.toLowerCase(),
 				sourceName: element,
