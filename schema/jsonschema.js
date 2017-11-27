@@ -38,22 +38,22 @@ function makeType(param) {
     	}
     	return formatType(str);
 	}
-	
+
 	return 'Unknown';
 }
 
 function makeSize(param) {
 	if (param.type === 'array') { param = param.items; }
-	
+
 	var keys = Object.keys(param);
 	var str = '';
 
 	if (param.type === 'string' && (exists(keys,'minLength') || exists(keys,'maxLength'))) {
-		
+
 		if ( exists(keys,'minLength') && exists(keys,'maxLength') && param.minLength === param.maxLength ) {
 			return '{'+param.minLength+'}';
 		}
-		
+
 		str = '{';
 		if (exists(keys,'minLength')) {
 			str += param.minLength;
@@ -64,11 +64,11 @@ function makeSize(param) {
 		}
 		str += '}';
 	} else if ( (param.type === 'integer' || param.type === 'number') && (exists(keys,'minimum') || exists(keys,'maximum')) ) {
-		
+
 		if ( exists(keys,'minimum') && exists(keys,'maximum') && param.minimum === param.maximum ) {
 			return '{'+param.minimum+'}';
 		}
-		
+
 		str = '{';
 		if (exists(keys,'minimum')) {
 			str += param.minimum;
@@ -117,9 +117,9 @@ function makeAllowedValues(param) {
 
 function isRequired(schema, key) {
 	if (schema.type === 'array') { schema = schema.items; }
-		
+
 	// TODO figure out way to display when anyOf, oneOf
-	return (exists(Object.keys(schema),'required') && (schema.required.indexOf(key) !== -1)) || 
+	return (exists(Object.keys(schema),'required') && (schema.required.indexOf(key) !== -1)) ||
 					(exists(Object.keys(schema.properties), key) && schema.properties[key].required);
 }
 
@@ -130,7 +130,7 @@ function isRequired(schema, key) {
 	if (exists(Object.keys(schema),'allOf')) {
 		for(var i = schema.allOf.length; i--;) {
 			schema.allOf[i] = mergeAllOf(schema.allOf[i]);
-			
+
 			var required = schema.required || [];
 			required = required.concat(schema.allOf[i].required || []);
 			schema = merge(schema, schema.allOf[i]);
@@ -144,44 +144,44 @@ function isRequired(schema, key) {
 
 function traverse(schema, p, group) {
 	var params = {};
-	
+
 	// Case: apiSuccess returns an array
 	/*if (!p && schema.type === 'array'){
 		params['data'] = '{array} data';
 		p = 'data[]';
 	}*/
-	
+
 	p = p || '';
 
-	
+
 	var properties = {};
 	//schema = mergeAllOf(schema);
-	if (schema.type === 'object'){
+	if (isType(schema.type, 'object')){
 		properties = schema.properties;
-	} else if (schema.type === 'array' && !schema.items) { // catch errors
+	} else if (isType(schema.type, 'array') && !schema.items) { // catch errors
 	  throw SyntaxError('ERROR: schema array missing items');
-	} else if (schema.type === 'array' && schema.items.type === 'object') {
+	} else if (isType(schema.type, 'array') && schema.items.type === 'object') {
 		//schema.items = mergeAllOf(schema.items);
 		properties = schema.items.properties;
 	}
-	
+
 	//console.log('properties',properties);
-	
+
 	for(var key in properties) {
 		if (!properties.hasOwnProperty(key)) { continue; }
 		var param = properties[key];
 		//console.log('param',param);
 		if (!param) { continue; }
-		
+
 		var type = makeType(param);
 		var size = makeSize(param);
 		var allowedValues = makeAllowedValues(param);
-		
+
 		var description = param.description;
 		if (param.type === 'array') {
 			description += ' '+param.items.description;
 		}
-		
+
 		// make field
 		var parent = p ? p + '.':'';
 		var field = parent + key;
@@ -197,7 +197,7 @@ function traverse(schema, p, group) {
 		if ( !isRequired(schema, key) ) {
 			field = '['+field+']';
 		}
-		
+
 		if (p) key = p + '.' + key;
 		var g = group ? '('+group+') ' : '';
 		// make group
@@ -205,9 +205,9 @@ function traverse(schema, p, group) {
 		//console.log(parent+key, params[parent + key])
 		var subs = {};
 		//var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
-		if (param.type === 'array' && param.items.type === 'object') {
+		if (isType(param.type, 'array') && param.items.type === 'object') {
 			subs = traverse(param.items, key, group); // subgroup+
-		} else if (param.type === 'object') {
+		} else if (isType(param.type, 'object')) {
 			subs = traverse(param, key, group); // subgroup+
 		}
 		for(var subKey in subs) {
@@ -217,6 +217,14 @@ function traverse(schema, p, group) {
 	}
 
 	return params;
+}
+
+function isType(types, type) {
+	if (Array.isArray(types)) {
+		return types.indexOf(type) !== -1;
+	} else {
+		return types === type;
+	};
 }
 
 var $RefParser = require('json-schema-ref-parser');
@@ -234,8 +242,8 @@ function build (relativePath, data, element, group) {
 		var lines = traverse(schema, null, group);
 		for(var l in lines) {
 			if (!lines.hasOwnProperty(l)) { continue; }
-			
-			var res = { 
+
+			var res = {
 				source: '@'+element+' '+lines[l]+'\n',
 				name: element.toLowerCase(),
 				sourceName: element,
