@@ -177,9 +177,9 @@ function traverse(schema, p, group) {
 		var size = makeSize(param);
 		var allowedValues = makeAllowedValues(param);
 
-		var description = param.description;
+		var description = param.description || '';
 		if (param.type === 'array') {
-			description += ' '+param.items.description;
+			description += ' '+ (param.items.description || '');
 		}
 
 		// make field
