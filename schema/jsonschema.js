@@ -119,8 +119,8 @@ function isRequired(schema, key) {
 	if (schema.type === 'array') { schema = schema.items; }
 
 	// TODO figure out way to display when anyOf, oneOf
-	return (exists(Object.keys(schema),'required') && (schema.required.indexOf(key) !== -1)) ||
-					(exists(Object.keys(schema.properties), key) && schema.properties[key].required);
+	return (exists(Object.keys(schema),'required') && Array.isArray(schema.required) && (schema.required.indexOf(key) !== -1)) ||
+					(exists(Object.keys(schema.properties), key) && (typeof schema.properties[key].required === 'boolean') && schema.properties[key].required);
 }
 
 // NOTE this is not proper jsonschema, likely in v5 w/ merge
