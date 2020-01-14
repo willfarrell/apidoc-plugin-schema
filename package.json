@@ -1,7 +1,7 @@
 {
-  "name":"apidoc-plugin-schema",
-  "version":"0.1.8",
-  "description": "Schema Plugin for apidoc.",
+	"name": "apidoc-plugin-schema",
+	"version": "0.1.8",
+	"description": "Schema Plugin for apidoc.",
 	"copyright": "Copyright (c) 2016 will Farrell. All rights reserved.",
 	"license": "MIT",
 	"author": [
@@ -14,7 +14,7 @@
 		"type": "git",
 		"url": "https://github.com/willfarrell/apidoc-plugin-schema"
 	},
-	"main":"index.js",
+	"main": "index.js",
 	"files": [
 		"index.js",
 		"parser",
@@ -25,9 +25,10 @@
 		"apidoc-plugin",
 		"jsonschema"
 	],
-  "dependencies": {
-    "trim": "0.0.1",
-    "json-schema-ref-parser":"*",
-    "deasync":"*"
-  }
+	"dependencies": {
+		"lodash": "4.17.15",
+		"trim": "0.0.1",
+		"json-schema-ref-parser": "*",
+		"deasync": "*"
+	}
 }

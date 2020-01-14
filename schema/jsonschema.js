@@ -124,8 +124,8 @@ function isRequired(schema, key) {
 }
 
 // NOTE this is not proper jsonschema, likely in v5 w/ merge
-// var merge = require('lodash/fp/merge');
-/*function mergeAllOf(schema) {
+var merge = require('lodash/fp/merge');
+function mergeAllOf(schema) {
 	// TODO update https://github.com/json-schema/json-schema/issues/116
 	if (exists(Object.keys(schema),'allOf')) {
 		for(var i = schema.allOf.length; i--;) {
@@ -139,7 +139,7 @@ function isRequired(schema, key) {
 		delete schema.allOf;
 	}
 	return schema;
-}*/
+}
 
 
 function traverse(schema, p, group) {
@@ -155,13 +155,13 @@ function traverse(schema, p, group) {
 
 
 	var properties = {};
-	//schema = mergeAllOf(schema);
+	schema = mergeAllOf(schema);
 	if (isType(schema.type, 'object')){
 		properties = schema.properties;
 	} else if (isType(schema.type, 'array') && !schema.items) { // catch errors
 	  throw SyntaxError('ERROR: schema array missing items');
 	} else if (isType(schema.type, 'array') && schema.items.type === 'object') {
-		//schema.items = mergeAllOf(schema.items);
+		schema.items = mergeAllOf(schema.items);
 		properties = schema.items.properties;
 	}
 
