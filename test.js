@@ -1,9 +1,9 @@
-var filename = __filename;
+const filename = __filename;
 
-var element = {
-	source:'@apiSchema',
-	content:'{jsonschema=./sample/jsonschema.json} apiParam'
+const element = {
+    source:'@apiSchema',
+    content:'{jsonschema=./sample/jsonschema.json} apiParam'
 };
 
-var plugin = require('./');
+const plugin = require('./');
 console.log(plugin(element, filename));
