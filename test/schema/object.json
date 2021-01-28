@@ -6,6 +6,11 @@
     ],
     "additionalProperties": false,
     "properties": {
+        "str-default": {
+            "type": "string",
+            "default": "default",
+            "description": "Store a default string value"
+        },
         "id-int-same": {
             "type": "integer",
             "minimum": 1,

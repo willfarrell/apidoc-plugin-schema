@@ -28,6 +28,14 @@
                 "Success 200": [
                     {
                         "group": "Success 200",
+                        "type": "String",
+                        "optional": true,
+                        "field": "str-default",
+                        "defaultValue": "default",
+                        "description": "Store a default string value"
+                    },
+                    {
+                        "group": "Success 200",
                         "type": "Integer",
                         "size": "1",
                         "optional": false,
