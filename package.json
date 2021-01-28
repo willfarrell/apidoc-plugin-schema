@@ -29,7 +29,11 @@
         "jsonschema"
     ],
     "dependencies": {
-        "deasync": "*",
-        "json-schema-ref-parser": "*"
+        "deasync-promise": "1.0.1",
+        "json-schema-ref-parser": "^9.0.7"
+    },
+    "devDependencies": {
+        "apidoc-core": "^0.12.0",
+        "tape": "^5.1.1"
     }
 }

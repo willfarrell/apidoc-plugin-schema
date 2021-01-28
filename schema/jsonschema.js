@@ -1,3 +1,4 @@
+const deasync = require('deasync-promise');
 function formatType(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -117,36 +118,10 @@ function isRequired(schema, key) {
                     (Object.keys(schema.properties).includes(key) && (typeof schema.properties[key].required === 'boolean') && schema.properties[key].required);
 }
 
-// NOTE this is not proper jsonschema, likely in v5 w/ merge
-// var merge = require('lodash/fp/merge');
-/*function mergeAllOf(schema) {
-    // TODO update https://github.com/json-schema/json-schema/issues/116
-    if (exists(Object.keys(schema),'allOf')) {
-        for(var i = schema.allOf.length; i--;) {
-            schema.allOf[i] = mergeAllOf(schema.allOf[i]);
-
-            var required = schema.required || [];
-            required = required.concat(schema.allOf[i].required || []);
-            schema = merge(schema, schema.allOf[i]);
-            if (required.length) schema.required = required;
-        }
-        delete schema.allOf;
-    }
-    return schema;
-}*/
-
-
 function traverse(schema, p, group) {
     var params = {};
 
-    // Case: apiSuccess returns an array
-    /*if (!p && schema.type === 'array'){
-        params['data'] = '{array} data';
-        p = 'data[]';
-    }*/
-
     p = p || '';
-
 
     var properties = {};
     //schema = mergeAllOf(schema);
@@ -180,7 +155,7 @@ function traverse(schema, p, group) {
         var parent = p ? p + '.':'';
         var field = parent + key;
 
-        if (exists(Object.keys(param),'default')) {
+        if (Object.keys(param).includes('default')) {
             if (typeof param.default === 'object') {
                 field += '=\''+JSON.stringify(param.default)+'\'';
             } else {
@@ -223,18 +198,16 @@ function isType(types, type) {
 
 var $RefParser = require('json-schema-ref-parser');
 function build (relativePath, data, element, group) {
+
     data = JSON.parse(data);
 
     // run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
     var elements = [], done = false;
-    $RefParser.dereference(relativePath, data, {}, function(err, schema) {
-        if (err) {
-            console.error(err);
-            done = true;
-            return;
-        }
-        var lines = traverse(schema, null, group);
-        for(var l in lines) {
+    try {
+        const schema = deasync($RefParser.dereference(relativePath, data, {}));
+
+        const lines = traverse(schema, null, group);
+        for(const l in lines) {
             if (!lines.hasOwnProperty(l)) { continue; }
 
             var res = {
@@ -246,9 +219,12 @@ function build (relativePath, data, element, group) {
             elements.push(res);
         }
         done = true;
-    });
-    require('deasync').loopWhile(function(){return !done;});
-    //console.log('generated', elements);
+    } catch (err) {
+        console.error(err);
+    }
+
+    require('deasync').loopWhile(() => { return !done; });
+
     return elements;
 }
 

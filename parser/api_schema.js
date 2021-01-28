@@ -3,13 +3,12 @@ function parse(content) {
 
     if (content.length === 0)
         return null;
-    
-    // @apiSchema (optional group) {jsonschema=relative_path} additional_argument
-    var parseRegExp = /^(?:\((.+?)\)){0,1}\s*\{(.+?)=(.+?)\}\s*(?:(.+))?/g;
-    var matches = parseRegExp.exec(content);
 
-    if ( ! matches)
-        return null;
+    // @apiSchema (optional group) {jsonschema=relative_path} additional_argument
+    const parseRegExp = /^(?:\((.+?)\)){0,1}\s*\{(.+?)=(.+?)\}\s*(?:(.+))?/g;
+    const matches = parseRegExp.exec(content);
+
+    if (!matches) return null;
 
     return {
         group: matches[1],
@@ -19,9 +18,6 @@ function parse(content) {
     };
 }
 
-/**
- * Exports
- */
 module.exports = {
     parse        : parse,
     path         : 'local',
