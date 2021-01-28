@@ -28,18 +28,90 @@
                 "Success 200": [
                     {
                         "group": "Success 200",
+                        "type": "Integer",
+                        "size": "1",
+                        "optional": false,
+                        "field": "id-int-same",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "Integer",
+                        "size": "1 - 2",
+                        "optional": true,
+                        "field": "id-int-diff",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "Integer",
+                        "size": "1 - ∞",
+                        "optional": true,
+                        "field": "id-int-min",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "Integer",
+                        "size": "-∞ - 1",
+                        "optional": true,
+                        "field": "id-int-max",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "size": "0",
+                        "optional": true,
+                        "field": "str-same",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "size": "0..10",
+                        "optional": true,
+                        "field": "str-diff",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "size": "0..",
+                        "optional": true,
+                        "field": "str-min",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "size": "0..",
+                        "optional": true,
+                        "field": "str-max",
+                        "description": ""
+                    },
+                    {
+                        "group": "Success 200",
                         "type": "String",
                         "optional": false,
                         "field": "version",
                         "description": "The version of the API"
+                    },
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "allowedValues": [
+                            "\"one\"",
+                            "\"two\""
+                        ],
+                        "optional": true,
+                        "field": "optional",
+                        "description": ""
                     }
                 ]
             }
         },
         "version": "0.0.0",
-        "filename": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
-        "group": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
-        "groupTitle": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
         "name": "GetTestObjectbody"
     }
 ]

@@ -1,8 +1,7 @@
 function parse(content) {
     content = content.trim();
 
-    if (content.length === 0)
-        return null;
+    if (content.length === 0) return null;
 
     // @apiSchema (optional group) {jsonschema=relative_path} additional_argument
     const parseRegExp = /^(?:\((.+?)\)){0,1}\s*\{(.+?)=(.+?)\}\s*(?:(.+))?/g;

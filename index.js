@@ -18,7 +18,7 @@ function parserSchemaElements(elements, element, block, filename) {
     elements.pop();
 
     const values = elementParser.parse(element.content, element.source);
-    app.log.debug('apischema.path',values.path);
+    app.log.debug('apischema.path', values.path);
 
     if (schemas[values.schema]) {
         const relative_path = path.join(path.dirname(filename), values.path);
@@ -27,7 +27,7 @@ function parserSchemaElements(elements, element, block, filename) {
         const new_elements = schemas[values.schema](relative_path, data, values.element, values.group);
 
         // do not use concat
-        for(let i = 0,l=new_elements.length; i<l;i++) {
+        for (let i = 0, l = new_elements.length; i < l; i++) {
             elements.push(new_elements[i]);
         }
     }

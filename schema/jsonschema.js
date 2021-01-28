@@ -1,4 +1,11 @@
 const deasync = require('deasync-promise');
+const $RefParser = require('json-schema-ref-parser');
+
+/**
+ * Capitalize the first letter in a header
+ *
+ * @param {string} str String to Titlecase
+ */
 function formatType(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -6,17 +13,19 @@ function formatType(str) {
 // TODO change / to |, requires core fix to allow `Empty parser result.`
 // https://github.com/apidoc/apidoc-core/blob/master/lib/parsers/api_param.js
 function makeType(param) {
-    //console.log('makeType',param);
     param = Array.isArray(param)? param[0]: param;
-    var strarr = [];
+    const strarr = [];
+
     if (param.format) {
         strarr.push(formatType(param.format));
-        if ( Array.isArray(param.type) && param.type.indexOf('null') !== -1 ) {
+        if (Array.isArray(param.type) && param.type.indexOf('null') !== -1) {
             strarr.push('Null');
         }
         return strarr.join('/');
     }
-    var str = '';
+
+    let str = '';
+
     if (Array.isArray(param.type)) {
         param.type.map(function(type){
             str = type;
@@ -37,26 +46,37 @@ function makeType(param) {
     return 'Unknown';
 }
 
+/**
+ * Return an apidoc formatted size parameter
+ *
+ * Min/Max Examples:
+ * "{-∞ - 8}"
+ * "{8}"
+ * "{8 - ∞}"
+ *
+ * Length Examples
+ * "{5}"
+ * "{..1}"
+ * "{2..6}"
+ * "{1..}"
+ */
 function makeSize(param) {
     if (param.type === 'array') { param = param.items; }
 
-    var keys = Object.keys(param);
-    var str = '';
+    const keys = Object.keys(param);
+    let str = '';
 
     if (param.type === 'string' && (keys.includes('minLength') || keys.includes('maxLength'))) {
-
         if ( keys.includes('minLength') && keys.includes('maxLength') && param.minLength === param.maxLength ) {
             return '{'+param.minLength+'}';
         }
 
         str = '{';
-        if (keys.includes('minLength')) {
-            str += param.minLength;
-        }
+        if (keys.includes('minLength')) str += param.minLength;
+
         str += '..';
-        if (keys.includes('maxLength')) {
-            str += param.maxLength;
-        }
+        if (keys.includes('maxLength')) str += param.maxLength;
+
         str += '}';
     } else if ( (param.type === 'integer' || param.type === 'number') && (keys.includes('minimum') || keys.includes('maximum')) ) {
 
@@ -83,18 +103,18 @@ function makeSize(param) {
 }
 
 function makeAllowedValues(param) {
-    if (param.type === 'array') { param = param.items; }
+    if (param.type === 'array') param = param.items;
 
     // convert null,true,false to string, add quotes to strings
-    if ( !Array.isArray(param.enum) ) { return ''; }
+    if (!Array.isArray(param.enum)) return '';
 
-    let values = [];
+    const values = [];
     param.enum = param.enum.map((item) => {
         if (typeof item === 'string') {
-            values.push('"'+item+'"'); // ensures values with spaces render properly
+            values.push(`"${item}"`); // ensures values with spaces render properly
         } else if (typeof item === 'number') {
-                        values.push(item.toString());
-                } else if (item === null) {
+            values.push(item.toString());
+        } else if (item === null) {
             // required to be at beginning
             values.unshift('null');
         } else if (item === true) {
@@ -104,27 +124,28 @@ function makeAllowedValues(param) {
             // required to be at beginning
             values.unshift('false');
         }
+
         return item;
     });
 
-    return '='+values.join(',');
+    return '=' + values.join(',');
 }
 
 function isRequired(schema, key) {
-    if (schema.type === 'array') { schema = schema.items; }
+    if (schema.type === 'array') schema = schema.items;
 
     // TODO figure out way to display when anyOf, oneOf
-    return (Object.keys(schema).includes('required') && Array.isArray(schema.required) && (schema.required.indexOf(key) !== -1)) ||
+    return (Object.keys(schema).includes('required') && Array.isArray(schema.required) && (schema.required.includes(key))) ||
                     (Object.keys(schema.properties).includes(key) && (typeof schema.properties[key].required === 'boolean') && schema.properties[key].required);
 }
 
 function traverse(schema, p, group) {
-    var params = {};
+    let params = {};
 
     p = p || '';
 
-    var properties = {};
-    //schema = mergeAllOf(schema);
+    let properties = {};
+
     if (isType(schema.type, 'object')){
         properties = schema.properties;
     } else if (isType(schema.type, 'array') && !schema.items) { // catch errors
@@ -134,17 +155,16 @@ function traverse(schema, p, group) {
         properties = schema.items.properties;
     }
 
-    //console.log('properties',properties);
-
-    for(var key in properties) {
+    for (var key in properties) {
         if (!properties.hasOwnProperty(key)) { continue; }
         var param = properties[key];
         //console.log('param',param);
         if (!param) { continue; }
 
-        var type = makeType(param);
-        var size = makeSize(param);
-        var allowedValues = makeAllowedValues(param);
+        const type = makeType(param);
+        const size = makeSize(param);
+
+        const allowedValues = makeAllowedValues(param);
 
         var description = param.description || '';
         if (param.type === 'array') {
@@ -152,8 +172,8 @@ function traverse(schema, p, group) {
         }
 
         // make field
-        var parent = p ? p + '.':'';
-        var field = parent + key;
+        const parent = p ? p + '.':'';
+        let field = parent + key;
 
         if (Object.keys(param).includes('default')) {
             if (typeof param.default === 'object') {
@@ -163,7 +183,7 @@ function traverse(schema, p, group) {
             }
         }
 
-        if ( !isRequired(schema, key) ) {
+        if (!isRequired(schema, key)) {
             field = '['+field+']';
         }
 
@@ -171,15 +191,16 @@ function traverse(schema, p, group) {
         var g = group ? '('+group+') ' : '';
         // make group
         params[key] = g+'{'+type+size+allowedValues+'} '+field+' '+description;
-        //console.log(parent+key, params[parent + key])
-        var subs = {};
+        let subs = {};
+
         //var subgroup = p ? p+'.' : ''; // TODO apidoc - groups cannot have `.` in them
         if (isType(param.type, 'array') && param.items.type === 'object') {
             subs = traverse(param.items, key, group); // subgroup+
         } else if (isType(param.type, 'object')) {
             subs = traverse(param, key, group); // subgroup+
         }
-        for(var subKey in subs) {
+
+        for (const subKey in subs) {
             if (!subs.hasOwnProperty(subKey)) { continue; }
             params[key+'.'+subKey] = subs[subKey];
         }
@@ -196,34 +217,29 @@ function isType(types, type) {
     };
 }
 
-var $RefParser = require('json-schema-ref-parser');
 function build (relativePath, data, element, group) {
-
     data = JSON.parse(data);
 
-    // run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
-    var elements = [], done = false;
+    const elements = [];
+
     try {
+        // run sync - https://github.com/BigstickCarpet/json-schema-ref-parser/issues/14
         const schema = deasync($RefParser.dereference(relativePath, data, {}));
 
         const lines = traverse(schema, null, group);
-        for(const l in lines) {
-            if (!lines.hasOwnProperty(l)) { continue; }
+        for (const l in lines) {
+            if (!lines.hasOwnProperty(l)) continue;
 
-            var res = {
+            elements.push({
                 source: '@'+element+' '+lines[l]+'\n',
                 name: element.toLowerCase(),
                 sourceName: element,
                 content: lines[l]+'\n'
-            };
-            elements.push(res);
+            });
         }
-        done = true;
     } catch (err) {
-        console.error(err);
+        throw err;
     }
-
-    require('deasync').loopWhile(() => { return !done; });
 
     return elements;
 }

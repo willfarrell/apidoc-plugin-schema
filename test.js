@@ -25,9 +25,11 @@ test('schema test', (t) => {
     t.ok(api.data, 'api-doc as data');
 
     const data = JSON.parse(api.data);
-    for (const key of ['filename', 'group', 'groupTitle']) {
-        t.ok(data[0][key], `has .data[0].${key}`);
-        delete data[0][key]
+    for (const d of data) {
+        for (const key of ['filename', 'group', 'groupTitle']) {
+            t.ok(d[key], `has .data[0].${key}`);
+            delete d[key]
+        }
     }
 
     if (process.env.UPDATE) fs.writeFileSync(path.resolve(__dirname, 'test/fixture.json'), JSON.stringify(data, null, 4));

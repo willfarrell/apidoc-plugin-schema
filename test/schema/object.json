@@ -1,13 +1,57 @@
 {
     "type": "object",
     "required": [
+        "id-int-same",
         "version"
     ],
     "additionalProperties": false,
     "properties": {
+        "id-int-same": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "id-int-diff": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2
+        },
+        "id-int-min": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "id-int-max": {
+            "type": "integer",
+            "maximum": 1
+        },
+        "str-same": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 0
+        },
+        "str-diff": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 10
+        },
+        "str-min": {
+            "type": "string",
+            "minLength": 0
+        },
+        "str-max": {
+            "type": "string",
+            "minLength": 0
+        },
         "version": {
             "type": "string",
             "description": "The version of the API"
+        },
+        "optional": {
+            "type": "string",
+            "enum": [
+                "one",
+                "two"
+            ]
         }
     }
 }
