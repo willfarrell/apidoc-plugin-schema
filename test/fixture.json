@@ -1,0 +1,45 @@
+[
+    {
+        "type": "get",
+        "url": "/do/arraybody",
+        "title": "",
+        "success": {
+            "fields": {
+                "Success 200": [
+                    {
+                        "group": "Success 200",
+                        "type": "Integer",
+                        "optional": true,
+                        "field": "id",
+                        "description": ""
+                    }
+                ]
+            }
+        },
+        "version": "0.0.0",
+        "name": "GetDoArraybody"
+    },
+    {
+        "type": "get",
+        "url": "/test/objectbody",
+        "title": "",
+        "success": {
+            "fields": {
+                "Success 200": [
+                    {
+                        "group": "Success 200",
+                        "type": "String",
+                        "optional": false,
+                        "field": "version",
+                        "description": "The version of the API"
+                    }
+                ]
+            }
+        },
+        "version": "0.0.0",
+        "filename": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
+        "group": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
+        "groupTitle": "/home/undefined/Development/apidoc-plugin-schema/test/app.js",
+        "name": "GetTestObjectbody"
+    }
+]

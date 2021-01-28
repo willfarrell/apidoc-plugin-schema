@@ -1,3 +1,4 @@
+const fs = require('fs');
 const apidoc = require('apidoc-core');
 const test = require('tape');
 const path = require('path');
@@ -29,24 +30,9 @@ test('schema test', (t) => {
         delete data[0][key]
     }
 
-    t.deepEquals(data, [{
-        type: 'get',
-        url: '/do/something',
-        title: '',
-        success: {
-            fields: {
-                'Success 200': [{
-                    group: 'Success 200',
-                    type: 'String',
-                    optional: false,
-                    field: 'version',
-                    description: 'The version of the API'
-                }]
-            }
-        },
-        version: '0.0.0',
-        name: 'GetDoSomething'
-    }], 'expected body');
+    if (process.env.UPDATE) fs.writeFileSync(path.resolve(__dirname, 'test/fixture.json'), JSON.stringify(data, null, 4));
+
+    t.deepEquals(data, JSON.parse(fs.readFileSync(path.resolve(__dirname, 'test/fixture.json'))), 'expected body')
 
     t.end();
 });
