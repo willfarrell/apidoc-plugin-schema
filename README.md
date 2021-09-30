@@ -1,4 +1,4 @@
-<h1 align=center>apidoc-plugin-jsonschema</h1>
+<h1 align=center>apidoc-plugin-schema2</h1>
 
 Generates and inject [apidoc](http://apidoc.com) elements from api schemas.
 

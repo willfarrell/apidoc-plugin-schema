@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const elementParser = require('./parser/api_schema');
+
 const schemas = {
     'jsonschema': require('./schema/jsonschema')
 };
@@ -39,4 +40,3 @@ module.exports = {
     init,
     parserSchemaElements
 };
-

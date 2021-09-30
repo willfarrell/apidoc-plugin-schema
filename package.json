@@ -1,5 +1,5 @@
 {
-    "name": "apidoc-plugin-jsonschema",
+    "name": "apidoc-plugin-schema2",
     "version": "0.1.8",
     "description": "JSON Schema Plugin for apidoc.",
     "copyright": "Copyright (c) 2016 will Farrell. All rights reserved.",
