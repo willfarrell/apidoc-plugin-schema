@@ -1,13 +1,17 @@
-# apidoc-plugin-schema
+<h1 align=center>apidoc-plugin-jsonschema</h1>
 
 Generates and inject [apidoc](http://apidoc.com) elements from api schemas.
 
 `@apiSchema [(group)] {SCHEMA_TYPE=PATH_TO_SCHEMA} ELEMENT_TYPE`
 
 ## Install
-`npm install apidoc-plugin-schema --save-dev`
+
+```sh
+npm add --include=dev apidoc-plugin-schema
+```
 
 ## Supported Schemas
+
 ### [jsonschema](http://json-schema.org)
 - `description`
 - `type`
@@ -20,6 +24,7 @@ Generates and inject [apidoc](http://apidoc.com) elements from api schemas.
 - auto groups object of array/object
 
 ## Example Use
+
 ```javascript
 /**
  * @api {get} /api GetAPI
